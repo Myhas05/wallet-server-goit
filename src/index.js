@@ -1,15 +1,23 @@
-const corsMiddleware = require("cors");
+const cors = require("cors");
 const express = require("express");
-const costsRoutes = require("./costs/costsRoutes");
+const costsRouter = require("./routes/costsRoutes");
+const db = require("./config/db");
 
-const PORT = process.env.PORT || 3000;
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(corsMiddleware());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors("*"));
+app.use("/costs", costsRouter);
 
-app.use("/costs", costsRoutes);
+db.connect(
+  "mongodb+srv://Mongo:123@firstmongodb-abyjl.mongodb.net/test?retryWrites=true&w=majority",
+  { useNewUrlParser: true, useUnifiedTopology: true },
+  (err, database) => {
+    if (err) return console.log("ERROR!!! From db: ", err);
 
-app.listen(PORT, () => {
-  console.log("server is running on " + PORT);
-});
+    console.log("Conect MongoDB. All working!!!");
+  }
+);
+app.listen(PORT, () => console.log(PORT));
